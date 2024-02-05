@@ -7,12 +7,14 @@ export const unpkgPathPlugin = () => {
     // override some aspects of the process by overriding this arg
     // override by attaching event listeners to onLoad and onResolve events
     setup(build: esbuild.PluginBuild) {
-      // handle root entry file of index.js
+      // handle imports with root entry file of index.js
       build.onResolve({ filter: /(^index\.js$)/ }, () => {
         return { path: 'index.js', namespace: 'a' };
       });
 
       // handle relative paths in a module
+      // prevent esbuild from mapping to file system location by mapping to a url
+      // that uses unpkg for imports, while handling nested modules
       build.onResolve(
         { filter: /^\.+\// },
         (args: esbuild.OnResolveArgs): esbuild.OnResolveResult => {
